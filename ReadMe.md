@@ -10,9 +10,9 @@ DefaultBindAddress=0.0.0.0
 ```
 
 - 프로젝트 패키징 할 때 설정해줘야 한다.
- - HttpServerModule 사용
- - Postman을 통해 테스트
- - 참고 사이트 (https://zhuanlan.zhihu.com/p/427465861 , https://qiita.com/peke2/items/41bf3357b064ac9564ef)
+ - [HttpServerModule](https://docs.unrealengine.com/4.27/en-US/API/Runtime/HttpServer/FHttpServerModule/) 사용
+ - [Postman](https://www.postman.com/)을 통해 테스트
+ - 참고 사이트 ([블로그1](https://zhuanlan.zhihu.com/p/427465861) ,[블로그2](https://qiita.com/peke2/items/41bf3357b064ac9564ef))
  ---
  
 #### QR 이미지 교체
