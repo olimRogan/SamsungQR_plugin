@@ -3,12 +3,12 @@
 
 ### [필수]
 
-DefaultEngine.ini 에서
+DefaultEngine.ini 에서 해당코드를 넣어줘야 외부IP 가능 (현재는 로컬 테스트만 함.)
 ```
 [HTTPServer.Listeners]
 DefaultBindAddress=0.0.0.0 
 ```
-넣어줘야 외부IP 가능 (현재는 로컬 테스트만 했다.)
+
 - 프로젝트 패키징 할 때 설정해줘야 한다.
  - HttpServerModule 사용
  - Postman을 통해 테스트
