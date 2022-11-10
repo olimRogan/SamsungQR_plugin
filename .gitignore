@@ -1,0 +1,9 @@
+/Binaries/Win64/*.pdb
+/Build
+/Config/*.json
+/DerivedDataCache
+/Intermediate
+/Saved
+.vs/
+Plugins/*/Intermediate/
+*.sln
