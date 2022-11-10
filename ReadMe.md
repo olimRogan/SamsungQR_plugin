@@ -1,6 +1,6 @@
 삼성 QR - 언리얼엔진 4.26 플러그인
 
------------ < 필수 > ------------
+- 필수
 DefaultEngine.ini 에서
 [HTTPServer.Listeners]
 DefaultBindAddress=0.0.0.0 넣어줘야 외부IP 가능 (현재는 로컬 테스트만 했다.)
