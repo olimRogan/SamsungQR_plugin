@@ -44,6 +44,8 @@ public class Samsung_QR : ModuleRules
 				"WebSockets",
 				"ImageWrapper", 
 				"RenderCore",
+				"Json",
+				"JsonUtilities",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
