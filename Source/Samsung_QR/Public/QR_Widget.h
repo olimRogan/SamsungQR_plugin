@@ -5,9 +5,9 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "HTTPServer/Public/IHttpRouter.h"
-#include "Samsung_QR/DataObject/DataObject.h"
 #include "QR_Widget.generated.h"
 
+class UCustomerDataInstance;
 class UImage;
 class IHttpRouter;
 class FHttpServerModule;
@@ -46,13 +46,6 @@ public:
 	bool CustomerJsonFileCheck();
 
 	FString GetCustomerFileName();
-
-	FString GetCenterName();
-
-	FString GetCustomerID(const FString& Str);
-
-	FString GetCurrentTime();
-
 	// 누가 어느매장에서 / 어떤제품을 언제 눌렀다.
 
 	UFUNCTION(BlueprintCallable)
@@ -77,9 +70,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UTexture2D* LoadQRTexture_FromFile();
 
-	// 고객 데이터를 담는 액터
+	// 고객 데이터를 담는 인스턴스
 	UPROPERTY()
-	ADataActor* DataActor;
+	UCustomerDataInstance* DataInstance;
 
 };
 	

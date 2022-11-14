@@ -11,8 +11,8 @@
 #include "Components/Image.h"
 #include "HTTPServer/Private/HttpRequestHandlerRegistrar.h"
 #include "HTTPServer/Public/HttpServerResponse.h"
-#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Samsung_QR/CustomerDataInstance/CustomerDataInstance.h"
 
 void UQR_Widget::NativeConstruct()
 {
@@ -20,6 +20,8 @@ void UQR_Widget::NativeConstruct()
 
 	// QR 이미지 설정
 	QR_Image->SetBrushFromTexture(LoadQRTexture_FromFile());
+
+	DataInstance = GetGameInstance()->GetSubsystem<UCustomerDataInstance>();
 
 	StartServer();
 }
@@ -55,11 +57,13 @@ void UQR_Widget::StartServer()
 			if (OnReceiveComplete.IsBound())
 			{
 				OnReceiveComplete.Broadcast();
-				if(DataActor)
+				if(DataInstance)
 				{
-					DataActor->CurrentData.ID = GetCustomerID(str);
-					DataActor->CurrentData.Center = GetCenterName();
-					DataActor->CurrentData.LogInTime = GetCurrentTime();
+					DataInstance->CurrentData.ID = UCustomerDataInstance::GetCustomerID(str);
+					DataInstance->CurrentData.Center = UCustomerDataInstance::GetCenterName();
+					DataInstance->CurrentData.LogInTime = UCustomerDataInstance::GetCurrentTime();
+
+					DataInstance->LoginOrSkipCallback.ExecuteIfBound();
 				}
 			}
 
@@ -69,10 +73,6 @@ void UQR_Widget::StartServer()
 		});
 
 	bClosed = false;
-
-	// Data Actor 생성
-	DataActor = GetWorld()->SpawnActor<ADataActor>();
-	if (DataActor) { UE_LOG(LogTemp, Warning, TEXT("DataActor")) };
 
 	Server->StartAllListeners();
 }
@@ -92,14 +92,11 @@ void UQR_Widget::StopServer()
 	{
 		Router->UnbindRoute(RouteHandle);
 	}
-	if(DataActor)
-	{
-		DataActor->Destroy();
-	}
 
 	bClosed = true;
 }
 
+// Json 파일 체크
 bool UQR_Widget::CustomerJsonFileCheck()
 {
 	const FString Path = FPaths::ProjectPluginsDir() + "Samsung_QR/Content/DB/"+ GetCustomerFileName();
@@ -109,9 +106,9 @@ bool UQR_Widget::CustomerJsonFileCheck()
 	return (FileManager.FileExists(*(Path)));
 }
 
+// 현재 년, 월, 일 받아오기
 FString UQR_Widget::GetCustomerFileName()
 {
-	// 현재 년, 월, 일 받아오기
 	const FDateTime UTCTime = UKismetMathLibrary::UtcNow();
 
 	const int32 Year = UTCTime.GetYear();
@@ -122,83 +119,43 @@ FString UQR_Widget::GetCustomerFileName()
 	return FileName;
 }
 
-FString UQR_Widget::GetCenterName()
-{
-	const FString FullPathFromRoot = FPaths::ProjectConfigDir() + "ClientConfig.json";
-
-	FString StringToLoad;
-	if(FFileHelper::LoadFileToString(StringToLoad, *FullPathFromRoot))
-	{
-		FString Ret;
-		const TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<TCHAR>::Create(StringToLoad);
-		TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
-
-		if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
-		{
-			Ret = JsonObject->GetStringField(TEXT("CenterName"));
-			return Ret;
-		}
-	}
-	return FString();
-}
-
-FString UQR_Widget::GetCustomerID(const FString& Str)
-{
-	FString RString;
-	Str.Split("ID\" : \"", nullptr, &RString);
-	FString ID;
-	RString.Split("\"", &ID, nullptr);
-
-	return ID;
-}
-
-FString UQR_Widget::GetCurrentTime()
-{
-	const FDateTime UTCTime = UKismetMathLibrary::UtcNow();
-
-	const int32 Year = UTCTime.GetYear();
-	const int32 Month = UTCTime.GetMonth();
-	const int32 Day = UTCTime.GetDay();
-	const int32 Hour = UTCTime.GetHour() + 9;
-	const int32 Minute = UTCTime.GetMinute();
-	const int32 Second = UTCTime.GetSecond();
-
-	return FString::Printf(TEXT("%d_%d_%d_%02d_%02d_%02d"), Year, Month, Day, Hour, Minute, Second);
-}
-
+// Skip 버튼 이벤트
 void UQR_Widget::OnClickedSkipBtn()
 {
-	if(DataActor)
+	if(DataInstance)
 	{
-		DataActor->CurrentData.ID = "unknown";
-		DataActor->CurrentData.Center = GetCenterName();
-		DataActor->CurrentData.LogInTime = GetCurrentTime();
+		DataInstance->CurrentData.ID = "unknown";
+		DataInstance->CurrentData.Center = UCustomerDataInstance::GetCenterName();
+		DataInstance->CurrentData.LogInTime = UCustomerDataInstance::GetCurrentTime();
+
+		DataInstance->LoginOrSkipCallback.ExecuteIfBound();
 	}
 }
 
+// Exit 버튼 이벤트
 void UQR_Widget::OnClickedExitBtn()
 {
-	if(DataActor)
+	if(DataInstance)
 	{
 		// Json Object 생성
 		FString JsonStr;
 		const TSharedRef<TJsonWriter<TCHAR>> JsonObj = TJsonWriterFactory<>::Create(&JsonStr);
 
-		if(DataActor)
+		if(DataInstance)
 		{
-			// Arr 에 추가 후 초기화
-			DataActor->CustomerDataArr.Emplace(DataActor->CurrentData);
-			DataActor->CurrentData = FCustomer();
+			// 고객데이터 배열에 추가 후 현재 고객데이터 초기화
+			DataInstance->CustomerDataArr.Emplace(DataInstance->CurrentData);
+			DataInstance->CurrentData = FCustomer();
 
 			JsonObj->WriteObjectStart();
 			JsonObj->WriteObjectStart(TEXT("CustomerInfo"));
 			JsonObj->WriteArrayStart(TEXT("Customer"));
 
-			for (const auto& Data : DataActor->CustomerDataArr)
+			for (const auto& Data : DataInstance->CustomerDataArr)
 			{
 				JsonObj->WriteObjectStart();
 				JsonObj->WriteValue(TEXT("id"), Data.ID);				// ID
-				JsonObj->WriteValue(TEXT("center"), GetCenterName());	// 매장
+				JsonObj->WriteValue(TEXT("center"), UCustomerDataInstance::GetCenterName());	// 매장
 				JsonObj->WriteValue(TEXT("loginTime"), Data.LogInTime);	// 로그인 시간
 
 
