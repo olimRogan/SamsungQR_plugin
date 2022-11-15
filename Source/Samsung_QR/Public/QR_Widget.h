@@ -42,10 +42,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Http")
 	int32 ServerPort = 8080;
 
-	UFUNCTION(BlueprintCallable)
-	bool CustomerJsonFileCheck();
-
-	FString GetCustomerFileName();
 	// 누가 어느매장에서 / 어떤제품을 언제 눌렀다.
 
 	UFUNCTION(BlueprintCallable)
@@ -53,7 +49,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnClickedExitBtn();
-
 
 private:
 

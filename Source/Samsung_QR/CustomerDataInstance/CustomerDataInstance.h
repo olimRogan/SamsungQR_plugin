@@ -31,7 +31,7 @@ struct FCustomer
 	FString LogInTime;
 };
 
-// 성공 타입
+// 
 UENUM(BlueprintType)
 enum class ESuccessType : uint8
 {
@@ -63,8 +63,8 @@ public:
 	FCustomer CurrentData;
 
 	// json 형태로 db 저장
-	UFUNCTION(BlueprintCallable)
-	void CreateDB(FCustomer Customer,TArray<FCustomer> Customers);
+	//UFUNCTION(BlueprintCallable)
+	//void CreateDB(FCustomer Customer,TArray<FCustomer> Customers);
 
 	// 우선은 함수 이름을 SendData 로 저정 (현재는 json 형태로 저장)
 	UFUNCTION(BlueprintCallable)
@@ -72,13 +72,10 @@ public:
 
 	// 로그인 또는 건너뛰기 콜백 함수
 	UFUNCTION()
-	void LoginOrSkipCallbackFunction();
-
-	// Json (아이디, 매장코드, 일시)
-	FString CreateJsonObject() const;
+	void LoginOrSkipCallbackFunction() const;
 
 	// Json (아이디, 매장코드, 제품코드, 일시)
-	FString CreateJsonObjectWithCode(const FString Code) const;
+	FString CreateJsonObject(const FString Code = "") const;
 
 	// 현재 시간 받아오기 (년, 월, 일, 시, 분, 초)
 	UFUNCTION(BlueprintCallable)
