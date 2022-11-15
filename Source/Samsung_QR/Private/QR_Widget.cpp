@@ -96,28 +96,28 @@ void UQR_Widget::StopServer()
 	bClosed = true;
 }
 
-// Json 파일 체크
-bool UQR_Widget::CustomerJsonFileCheck()
-{
-	const FString Path = FPaths::ProjectPluginsDir() + "Samsung_QR/Content/DB/"+ GetCustomerFileName();
-
-	IFileManager& FileManager = IFileManager::Get();
-
-	return (FileManager.FileExists(*(Path)));
-}
-
-// 현재 년, 월, 일 받아오기
-FString UQR_Widget::GetCustomerFileName()
-{
-	const FDateTime UTCTime = UKismetMathLibrary::UtcNow();
-
-	const int32 Year = UTCTime.GetYear();
-	const int32 Month = UTCTime.GetMonth();
-	const int32 Day = UTCTime.GetDay();
-
-	const FString FileName = FString::Printf(TEXT("%d_%d_%d.json"), Year, Month, Day);
-	return FileName;
-}
+//// Json 파일 체크
+//bool UQR_Widget::CustomerJsonFileCheck()
+//{
+//	const FString Path = FPaths::ProjectPluginsDir() + "Samsung_QR/Content/DB/"+ GetCustomerFileName();
+//
+//	IFileManager& FileManager = IFileManager::Get();
+//
+//	return (FileManager.FileExists(*(Path)));
+//}
+//
+//// 현재 년, 월, 일 받아오기
+//FString UQR_Widget::GetCustomerFileName()
+//{
+//	const FDateTime UTCTime = UKismetMathLibrary::UtcNow();
+//
+//	const int32 Year = UTCTime.GetYear();
+//	const int32 Month = UTCTime.GetMonth();
+//	const int32 Day = UTCTime.GetDay();
+//
+//	const FString FileName = FString::Printf(TEXT("%d_%d_%d.json"), Year, Month, Day);
+//	return FileName;
+//}
 
 // Skip 버튼 이벤트
 void UQR_Widget::OnClickedSkipBtn()
@@ -135,51 +135,57 @@ void UQR_Widget::OnClickedSkipBtn()
 // Exit 버튼 이벤트
 void UQR_Widget::OnClickedExitBtn()
 {
+	// CurrentData 초기화
 	if(DataInstance)
 	{
-		// Json Object 생성
-		FString JsonStr;
-		const TSharedRef<TJsonWriter<TCHAR>> JsonObj = TJsonWriterFactory<>::Create(&JsonStr);
+		DataInstance->CurrentData = FCustomer();
+	}
+	/*
+	if(datainstance)
+	{
+		// json object 생성
+		fstring jsonstr;
+		const tsharedref<tjsonwriter<tchar>> jsonobj = tjsonwriterfactory<>::create(&jsonstr);
 
-		if(DataInstance)
+		if(datainstance)
 		{
 			// 고객데이터 배열에 추가 후 현재 고객데이터 초기화
-			DataInstance->CustomerDataArr.Emplace(DataInstance->CurrentData);
-			DataInstance->CurrentData = FCustomer();
+			datainstance->customerdataarr.emplace(datainstance->currentdata);
+			datainstance->currentdata = fcustomer();
 
-			JsonObj->WriteObjectStart();
-			JsonObj->WriteObjectStart(TEXT("CustomerInfo"));
-			JsonObj->WriteArrayStart(TEXT("Customer"));
+			jsonobj->writeobjectstart();
+			jsonobj->writeobjectstart(text("customerinfo"));
+			jsonobj->writearraystart(text("customer"));
 
-			for (const auto& Data : DataInstance->CustomerDataArr)
+			for (const auto& data : datainstance->customerdataarr)
 			{
-				JsonObj->WriteObjectStart();
-				JsonObj->WriteValue(TEXT("id"), Data.ID);				// ID
-				JsonObj->WriteValue(TEXT("center"), UCustomerDataInstance::GetCenterName());	// 매장
-				JsonObj->WriteValue(TEXT("loginTime"), Data.LogInTime);	// 로그인 시간
+				jsonobj->writeobjectstart();
+				jsonobj->writevalue(text("id"), data.id);				// id
+				jsonobj->writevalue(text("center"), ucustomerdatainstance::getcentername());	// 매장
+				jsonobj->writevalue(text("logintime"), data.logintime);	// 로그인 시간
 
 
-				JsonObj->WriteArrayStart(TEXT("model"));						// 고른 제품
-				for (const auto& Idx : Data.PickingModel)
+				jsonobj->writearraystart(text("model"));						// 고른 제품
+				for (const auto& idx : data.pickingmodel)
 				{
-					JsonObj->WriteObjectStart();
-					JsonObj->WriteValue(TEXT("code"), Idx.Key);			// 제품 코드
-					JsonObj->WriteValue(TEXT("time"), Idx.Value);				// 일시
-					JsonObj->WriteObjectEnd();
+					jsonobj->writeobjectstart();
+					jsonobj->writevalue(text("code"), idx.key);			// 제품 코드
+					jsonobj->writevalue(text("time"), idx.value);				// 일시
+					jsonobj->writeobjectend();
 				}
-				JsonObj->WriteArrayEnd();
+				jsonobj->writearrayend();
 
-				JsonObj->WriteObjectEnd();
+				jsonobj->writeobjectend();
 			}
-			JsonObj->WriteArrayEnd();
-			JsonObj->WriteObjectEnd();
-			JsonObj->WriteObjectEnd();
-			JsonObj->Close();
+			jsonobj->writearrayend();
+			jsonobj->writeobjectend();
+			jsonobj->writeobjectend();
+			jsonobj->close();
 
-			const FString Path = FPaths::ProjectPluginsDir() + "Samsung_QR/Content/DB/" + GetCustomerFileName();
-			FFileHelper::SaveStringToFile(*JsonStr, *Path);
+			const fstring path = fpaths::projectpluginsdir() + "samsung_qr/content/db/" + getcustomerfilename();
+			ffilehelper::savestringtofile(*jsonstr, *path);
 		}
-	}
+	}*/
 }
 
 // 로컬에서 QR 이미지를 Texture2D 로 런타임 중 로드한다.
