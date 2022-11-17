@@ -11,6 +11,7 @@ public class Samsung_QR : ModuleRules
 		PublicIncludePaths.AddRange(
 			new string[] {
 				// ... add public include paths required here ...
+				
 			}
 			);
 				
@@ -42,7 +43,7 @@ public class Samsung_QR : ModuleRules
 				"HTTP",
 				"HTTPServer",
 				"WebSockets",
-				"ImageWrapper", 
+				"ImageWrapper",
 				"RenderCore",
 				"Json",
 				"JsonUtilities",

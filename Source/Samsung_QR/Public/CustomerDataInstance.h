@@ -1,9 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "Subsystems/GameInstanceSubsystem.h"
 #include "CustomerDataInstance.generated.h"
 
 DECLARE_DELEGATE(FLoginOrSkipDelegate);
@@ -14,24 +14,24 @@ struct FCustomer
 {
 	GENERATED_BODY()
 
-	// ¸ÅÀå ID
+	// ë§¤ì¥ ID
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FString Center;
 
-	// °í°´ ID
+	// ê³ ê° ID
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FString ID;
 
-	// °í¸¥ »óÇ°µé (»óÇ°ÄÚµå / ´©¸¥ ½Ã°£)
+	// ê³ ë¥¸ ìƒí’ˆë“¤ (ìƒí’ˆì½”ë“œ / ëˆ„ë¥¸ ì‹œê°„)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TMap<FString,FString> PickingModel;
 
-	// ·Î±×ÀÎ ½Ã°£
+	// ë¡œê·¸ì¸ ì‹œê°„
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FString LogInTime;
 };
 
-// 
+//
 UENUM(BlueprintType)
 enum class ESuccessType : uint8
 {
@@ -40,7 +40,7 @@ enum class ESuccessType : uint8
 };
 
 /**
- * 
+ *
  */
 UCLASS()
 class SAMSUNG_QR_API UCustomerDataInstance : public UGameInstanceSubsystem
@@ -48,45 +48,46 @@ class SAMSUNG_QR_API UCustomerDataInstance : public UGameInstanceSubsystem
 	GENERATED_BODY()
 
 public:
-	// ·Î±×ÀÎ ¶Ç´Â °Ç³Ê¶Ù±â Äİ¹é µ¨¸®°ÔÀÌÆ®
+
+	// ë¡œê·¸ì¸ ë˜ëŠ” ê±´ë„ˆë›°ê¸° ì½œë°± ë¸ë¦¬ê²Œì´íŠ¸
 	FLoginOrSkipDelegate LoginOrSkipCallback;
 
-	// ÃÊ±âÈ­
+	// ì´ˆê¸°í™”
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
-	// °í°´ µ¥ÀÌÅÍ ¹è¿­ -> Á¦Ç° ÇÏ³ª¾¿ µ¥ÀÌÅÍ¸¦ º¸³¾ °æ¿ì ÇÊ¿ä ¾øÀ» µí
+	// ê³ ê° ë°ì´í„° ë°°ì—´ -> ì œí’ˆ í•˜ë‚˜ì”© ë°ì´í„°ë¥¼ ë³´ë‚¼ ê²½ìš° í•„ìš” ì—†ì„ ë“¯
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	TArray<FCustomer> CustomerDataArr;
 
-	// ÇöÀç °í°´ µ¥ÀÌÅÍ
+	// í˜„ì¬ ê³ ê° ë°ì´í„°
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	FCustomer CurrentData;
 
-	// json ÇüÅÂ·Î db ÀúÀå
+	// json í˜•íƒœë¡œ db ì €ì¥
 	//UFUNCTION(BlueprintCallable)
 	//void CreateDB(FCustomer Customer,TArray<FCustomer> Customers);
 
-	// ¿ì¼±Àº ÇÔ¼ö ÀÌ¸§À» SendData ·Î ÀúÁ¤ (ÇöÀç´Â json ÇüÅÂ·Î ÀúÀå)
+	// ìš°ì„ ì€ í•¨ìˆ˜ ì´ë¦„ì„ SendData ë¡œ ì €ì • (í˜„ì¬ëŠ” json í˜•íƒœë¡œ ì €ì¥)
 	UFUNCTION(BlueprintCallable)
 	void SendData(const FString Code);
 
-	// ·Î±×ÀÎ ¶Ç´Â °Ç³Ê¶Ù±â Äİ¹é ÇÔ¼ö
+	// ë¡œê·¸ì¸ ë˜ëŠ” ê±´ë„ˆë›°ê¸° ì½œë°± í•¨ìˆ˜
 	UFUNCTION()
 	void LoginOrSkipCallbackFunction() const;
 
-	// Json (¾ÆÀÌµğ, ¸ÅÀåÄÚµå, Á¦Ç°ÄÚµå, ÀÏ½Ã)
+	// Json (ì•„ì´ë””, ë§¤ì¥ì½”ë“œ, ì œí’ˆì½”ë“œ, ì¼ì‹œ)
 	FString CreateJsonObject(const FString Code = "") const;
 
-	// ÇöÀç ½Ã°£ ¹Ş¾Æ¿À±â (³â, ¿ù, ÀÏ, ½Ã, ºĞ, ÃÊ)
+	// í˜„ì¬ ì‹œê°„ ë°›ì•„ì˜¤ê¸° (ë…„, ì›”, ì¼, ì‹œ, ë¶„, ì´ˆ)
 	UFUNCTION(BlueprintCallable)
 	static FString GetCurrentTime();
 
-	// ÇöÁö ½Ã°£ ¹Ş¾Æ¿À±â (³â, ¿ù, ÀÏ)
+	// í˜„ì§€ ì‹œê°„ ë°›ì•„ì˜¤ê¸° (ë…„, ì›”, ì¼)
 	static FString GetCurrentYearMonthDay();
 
-	// ¸ÅÀå ÀÌ¸§ ¹Ş¾Æ¿À±â (ClientConfig.json)
+	// ë§¤ì¥ ì´ë¦„ ë°›ì•„ì˜¤ê¸° (ClientConfig.json)
 	static FString GetCenterName();
 
-	// °í°´ ID ¹Ş¾Æ¿À±â
+	// ê³ ê° ID ë°›ì•„ì˜¤ê¸°
 	static FString GetCustomerID(const FString& Str);
 };

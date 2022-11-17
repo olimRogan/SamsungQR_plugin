@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -16,7 +16,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnReceiveComplete);
 
 
 /**
- * 
+ *
  */
 UCLASS()
 class SAMSUNG_QR_API UQR_Widget : public UUserWidget
@@ -42,7 +42,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Http")
 	int32 ServerPort = 8080;
 
-	// ´©°¡ ¾î´À¸ÅÀå¿¡¼­ / ¾î¶²Á¦Ç°À» ¾ğÁ¦ ´­·¶´Ù.
+	// ëˆ„ê°€ ì–´ëŠë§¤ì¥ì—ì„œ / ì–´ë–¤ì œí’ˆì„ ì–¸ì œ ëˆŒë €ë‹¤.
 
 	UFUNCTION(BlueprintCallable)
 	void OnClickedSkipBtn();
@@ -57,7 +57,7 @@ private:
 	FOnReceiveComplete OnReceiveComplete;
 
 public:
-	// QR ÀÌ¹ÌÁö
+	// QR ì´ë¯¸ì§€
 	UPROPERTY(EditAnywhere, meta = (BindWidget), BlueprintReadWrite)
 	UImage* QR_Image;
 
@@ -65,9 +65,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UTexture2D* LoadQRTexture_FromFile();
 
-	// °í°´ µ¥ÀÌÅÍ¸¦ ´ã´Â ÀÎ½ºÅÏ½º
+	// ê³ ê° ë°ì´í„°ë¥¼ ë‹´ëŠ” ì¸ìŠ¤í„´ìŠ¤
 	UPROPERTY()
 	UCustomerDataInstance* DataInstance;
 
 };
-	
+

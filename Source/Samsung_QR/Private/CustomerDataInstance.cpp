@@ -1,17 +1,21 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "CustomerDataInstance.h"
-
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Misc/Paths.h"
+#include "Misc/FileHelper.h"
+#include "Serialization/JsonWriter.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
 
 void UCustomerDataInstance::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
 
-	// µ¨¸®°ÔÀÌÆ® ¹ÙÀÎµù
+	// ë¸ë¦¬ê²Œì´íŠ¸ ë°”ì¸ë”©
 	LoginOrSkipCallback.BindUObject(this, &UCustomerDataInstance::LoginOrSkipCallbackFunction);
 }
 
@@ -33,7 +37,7 @@ FString UCustomerDataInstance::GetCurrentTime()
 
 FString UCustomerDataInstance::GetCurrentYearMonthDay()
 {
-	// ÇöÀç ³â, ¿ù, ÀÏ ¹Ş¾Æ¿À±â
+	// í˜„ì¬ ë…„, ì›”, ì¼ ë°›ì•„ì˜¤ê¸°
 	const FDateTime UTCTime = UKismetMathLibrary::UtcNow();
 
 	const int32 Year = UTCTime.GetYear();
@@ -45,11 +49,11 @@ FString UCustomerDataInstance::GetCurrentYearMonthDay()
 
 //void UCustomerDataInstance::CreateDB(FCustomer Customer,TArray<FCustomer> Customers)
 //{
-//	// Json Object »ı¼º
+//	// Json Object ìƒì„±
 //	FString JsonStr;
 //	const TSharedRef<TJsonWriter<TCHAR>> JsonObj = TJsonWriterFactory<>::Create(&JsonStr);
 //
-//	// Arr ¿¡ Ãß°¡ ÈÄ ÃÊ±âÈ­
+//	// Arr ì— ì¶”ê°€ í›„ ì´ˆê¸°í™”
 //	Customers.Emplace(Customer);
 //	Customer = FCustomer();
 //
@@ -61,16 +65,16 @@ FString UCustomerDataInstance::GetCurrentYearMonthDay()
 //	{
 //		JsonObj->WriteObjectStart();
 //		JsonObj->WriteValue(TEXT("id"), Data.ID);					// ID
-//		JsonObj->WriteValue(TEXT("center"), GetCenterName());		// ¸ÅÀå
-//		JsonObj->WriteValue(TEXT("loginTime"), Data.LogInTime);		// ·Î±×ÀÎ ½Ã°£
-//		
+//		JsonObj->WriteValue(TEXT("center"), GetCenterName());		// ë§¤ì¥
+//		JsonObj->WriteValue(TEXT("loginTime"), Data.LogInTime);		// ë¡œê·¸ì¸ ì‹œê°„
 //
-//		JsonObj->WriteArrayStart(TEXT("model"));							// °í¸¥ Á¦Ç°
+//
+//		JsonObj->WriteArrayStart(TEXT("model"));							// ê³ ë¥¸ ì œí’ˆ
 //		for (const auto& Idx : Data.PickingModel)
 //		{
 //			JsonObj->WriteObjectStart();
-//			JsonObj->WriteValue(TEXT("code"), Idx.Key);				// Á¦Ç° ÄÚµå
-//			JsonObj->WriteValue(TEXT("time"), Idx.Value);					// ÀÏ½Ã
+//			JsonObj->WriteValue(TEXT("code"), Idx.Key);				// ì œí’ˆ ì½”ë“œ
+//			JsonObj->WriteValue(TEXT("time"), Idx.Value);					// ì¼ì‹œ
 //			JsonObj->WriteObjectEnd();
 //		}
 //		JsonObj->WriteArrayEnd();
@@ -86,10 +90,10 @@ FString UCustomerDataInstance::GetCurrentYearMonthDay()
 //	FFileHelper::SaveStringToFile(*JsonStr, *Path);
 //}
 
-// ¾ÆÀÌµğ, ¸ÅÀåÄÚµå, Á¦Ç°ÄÚµå, Á¦Ç° ¼±ÅÃ ½Ã°£
+// ì•„ì´ë””, ë§¤ì¥ì½”ë“œ, ì œí’ˆì½”ë“œ, ì œí’ˆ ì„ íƒ ì‹œê°„
 void UCustomerDataInstance::SendData(const FString Code)
 {
-	// Json Object »ı¼º
+	// Json Object ìƒì„±
 	const FString JsonStr = CreateJsonObject(Code);
 
 	const FString Path = FPaths::ProjectPluginsDir() + "Samsung_QR/Content/DB/" + GetCurrentYearMonthDay();
@@ -97,10 +101,10 @@ void UCustomerDataInstance::SendData(const FString Code)
 	FFileHelper::SaveStringToFile(*JsonStr, *Path);
 }
 
-// ¾ÆÀÌµğ, ¸ÅÀåÄÚµå, ·Î±×ÀÎ ½Ã°£
+// ì•„ì´ë””, ë§¤ì¥ì½”ë“œ, ë¡œê·¸ì¸ ì‹œê°„
 void UCustomerDataInstance::LoginOrSkipCallbackFunction() const
 {
-	// Json Object »ı¼º
+	// Json Object ìƒì„±
 	const FString JsonStr = CreateJsonObject();
 
 	const FString Path = FPaths::ProjectPluginsDir() + "Samsung_QR/Content/DB/" + GetCurrentYearMonthDay();
@@ -110,7 +114,7 @@ void UCustomerDataInstance::LoginOrSkipCallbackFunction() const
 
 FString UCustomerDataInstance::CreateJsonObject(const FString Code) const
 {
-	// Json Object »ı¼º
+	// Json Object ìƒì„±
 	FString JsonStr;
 	const TSharedRef<TJsonWriter<TCHAR>> JsonObj = TJsonWriterFactory<>::Create(&JsonStr);
 
@@ -118,19 +122,19 @@ FString UCustomerDataInstance::CreateJsonObject(const FString Code) const
 	JsonObj->WriteObjectStart(TEXT("CustomerInfo"));
 
 	JsonObj->WriteValue(TEXT("id"), CurrentData.ID);					// ID
-	JsonObj->WriteValue(TEXT("center"), GetCenterName());			// ¸ÅÀå
+	JsonObj->WriteValue(TEXT("center"), GetCenterName());			// ë§¤ì¥
 
-	// ·¹º§ ÀÌ¸§ (Start)
+	// ë ˆë²¨ ì´ë¦„ (Start)
 	const FString LevelName = UGameplayStatics::GetCurrentLevelName(this, true);
 
 	if(LevelName == "Start")
 	{
-		JsonObj->WriteValue(TEXT("loginTime"), CurrentData.LogInTime);		// ·Î±×ÀÎ ½Ã°£
+		JsonObj->WriteValue(TEXT("loginTime"), CurrentData.LogInTime);		// ë¡œê·¸ì¸ ì‹œê°„
 	}
 	else
 	{
-		JsonObj->WriteValue(TEXT("code"), Code);							// Á¦Ç° ÄÚµå
-		JsonObj->WriteValue(TEXT("selectedTime"), GetCurrentTime());		// ¼±ÅÃÀÏ½Ã
+		JsonObj->WriteValue(TEXT("code"), Code);							// ì œí’ˆ ì½”ë“œ
+		JsonObj->WriteValue(TEXT("selectedTime"), GetCurrentTime());		// ì„ íƒì¼ì‹œ
 	}
 
 	JsonObj->WriteObjectEnd();

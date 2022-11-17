@@ -1,24 +1,23 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "QR_Widget.h"
 
-#include "HTTPServer/Public/HttpServerModule.h"
-#include "HTTPServer/Public/IHttpRouter.h"
-#include "Runtime/Engine/Classes/Engine/Texture2D.h"
-#include "Misc/FileHelper.h"
+#include "CustomerDataInstance.h"
+#include "HttpServerModule.h"
+#include "HttpServerResponse.h"
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
 #include "Components/Image.h"
-#include "HTTPServer/Private/HttpRequestHandlerRegistrar.h"
-#include "HTTPServer/Public/HttpServerResponse.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "Samsung_QR/CustomerDataInstance/CustomerDataInstance.h"
+#include "Engine/Texture2D.h"
+#include "Misc/Paths.h"
+#include "Misc/FileHelper.h"
+
 
 void UQR_Widget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	// QR ÀÌ¹ÌÁö ¼³Á¤
+	// QR ì´ë¯¸ì§€ ì„¤ì •
 	QR_Image->SetBrushFromTexture(LoadQRTexture_FromFile());
 
 	DataInstance = GetGameInstance()->GetSubsystem<UCustomerDataInstance>();
@@ -96,7 +95,7 @@ void UQR_Widget::StopServer()
 	bClosed = true;
 }
 
-//// Json ÆÄÀÏ Ã¼Å©
+//// Json íŒŒì¼ ì²´í¬
 //bool UQR_Widget::CustomerJsonFileCheck()
 //{
 //	const FString Path = FPaths::ProjectPluginsDir() + "Samsung_QR/Content/DB/"+ GetCustomerFileName();
@@ -106,7 +105,7 @@ void UQR_Widget::StopServer()
 //	return (FileManager.FileExists(*(Path)));
 //}
 //
-//// ÇöÀç ³â, ¿ù, ÀÏ ¹Ş¾Æ¿À±â
+//// í˜„ì¬ ë…„, ì›”, ì¼ ë°›ì•„ì˜¤ê¸°
 //FString UQR_Widget::GetCustomerFileName()
 //{
 //	const FDateTime UTCTime = UKismetMathLibrary::UtcNow();
@@ -119,7 +118,7 @@ void UQR_Widget::StopServer()
 //	return FileName;
 //}
 
-// Skip ¹öÆ° ÀÌº¥Æ®
+// Skip ë²„íŠ¼ ì´ë²¤íŠ¸
 void UQR_Widget::OnClickedSkipBtn()
 {
 	if(DataInstance)
@@ -132,10 +131,10 @@ void UQR_Widget::OnClickedSkipBtn()
 	}
 }
 
-// Exit ¹öÆ° ÀÌº¥Æ®
+// Exit ë²„íŠ¼ ì´ë²¤íŠ¸
 void UQR_Widget::OnClickedExitBtn()
 {
-	// CurrentData ÃÊ±âÈ­
+	// CurrentData ì´ˆê¸°í™”
 	if(DataInstance)
 	{
 		DataInstance->CurrentData = FCustomer();
@@ -143,13 +142,13 @@ void UQR_Widget::OnClickedExitBtn()
 	/*
 	if(datainstance)
 	{
-		// json object »ı¼º
+		// json object ìƒì„±
 		fstring jsonstr;
 		const tsharedref<tjsonwriter<tchar>> jsonobj = tjsonwriterfactory<>::create(&jsonstr);
 
 		if(datainstance)
 		{
-			// °í°´µ¥ÀÌÅÍ ¹è¿­¿¡ Ãß°¡ ÈÄ ÇöÀç °í°´µ¥ÀÌÅÍ ÃÊ±âÈ­
+			// ê³ ê°ë°ì´í„° ë°°ì—´ì— ì¶”ê°€ í›„ í˜„ì¬ ê³ ê°ë°ì´í„° ì´ˆê¸°í™”
 			datainstance->customerdataarr.emplace(datainstance->currentdata);
 			datainstance->currentdata = fcustomer();
 
@@ -161,16 +160,16 @@ void UQR_Widget::OnClickedExitBtn()
 			{
 				jsonobj->writeobjectstart();
 				jsonobj->writevalue(text("id"), data.id);				// id
-				jsonobj->writevalue(text("center"), ucustomerdatainstance::getcentername());	// ¸ÅÀå
-				jsonobj->writevalue(text("logintime"), data.logintime);	// ·Î±×ÀÎ ½Ã°£
+				jsonobj->writevalue(text("center"), ucustomerdatainstance::getcentername());	// ë§¤ì¥
+				jsonobj->writevalue(text("logintime"), data.logintime);	// ë¡œê·¸ì¸ ì‹œê°„
 
 
-				jsonobj->writearraystart(text("model"));						// °í¸¥ Á¦Ç°
+				jsonobj->writearraystart(text("model"));						// ê³ ë¥¸ ì œí’ˆ
 				for (const auto& idx : data.pickingmodel)
 				{
 					jsonobj->writeobjectstart();
-					jsonobj->writevalue(text("code"), idx.key);			// Á¦Ç° ÄÚµå
-					jsonobj->writevalue(text("time"), idx.value);				// ÀÏ½Ã
+					jsonobj->writevalue(text("code"), idx.key);			// ì œí’ˆ ì½”ë“œ
+					jsonobj->writevalue(text("time"), idx.value);				// ì¼ì‹œ
 					jsonobj->writeobjectend();
 				}
 				jsonobj->writearrayend();
@@ -188,7 +187,7 @@ void UQR_Widget::OnClickedExitBtn()
 	}*/
 }
 
-// ·ÎÄÃ¿¡¼­ QR ÀÌ¹ÌÁö¸¦ Texture2D ·Î ·±Å¸ÀÓ Áß ·ÎµåÇÑ´Ù.
+// ë¡œì»¬ì—ì„œ QR ì´ë¯¸ì§€ë¥¼ Texture2D ë¡œ ëŸ°íƒ€ì„ ì¤‘ ë¡œë“œí•œë‹¤.
 UTexture2D* UQR_Widget::LoadQRTexture_FromFile()
 {
 	UTexture2D* LoadedT2D = nullptr;
